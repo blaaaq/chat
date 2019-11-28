@@ -1,0 +1,19 @@
+{
+    "name": "chat/server",
+    "authors": [
+        {
+            "name": "sos",
+            "email": "sos@sos.sos"
+        }
+    ],
+    "require": {
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "cboden/ratchet": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+        }
+    }
+}
