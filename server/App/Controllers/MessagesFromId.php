@@ -27,7 +27,7 @@ class MessagesFromId extends \App\Core\Controller
 
             $send_data[]=[
                 'id' => $data['id'],
-                'senderId' => $data['text'],
+                'senderId' => $sender['id'],
                 'senderNick' => $sender['nick'],
                 'text' => $data['text'],
                 'time' => $data['time'],

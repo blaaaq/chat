@@ -22,11 +22,14 @@ class Chat extends React.Component {
 
     componentDidMount() {
         this.props.getLastMessages();
+        this.ws = new WebSocket('ws://localhost:8081/echo');
+        this.ws.onmessage = (e) => this.props.setMessage({message: JSON.parse(e.data)});
     }
 
 
     send(form){
-        this.props.sendMessage({text: form.current.value});
+        this.ws.send(JSON.stringify({message: form.current.value}));
+        //this.props.sendMessage({text: form.current.value});
     }
 
     add(){
@@ -71,7 +74,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    sendMessage: messages.sendMessage,
+    setMessage: messages.setMessage,
     getLastMessages: messages.getLastMessages,
     getMessagesFromId: messages.getMessagesFromId,
 };

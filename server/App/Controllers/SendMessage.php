@@ -1,5 +1,6 @@
 <?php
 
+//// Dont use
 
 namespace App\Controllers;
 
@@ -30,7 +31,7 @@ class SendMessage extends \App\Core\Controller
 
         $send_data[]=[
             'id' => $add_msg['id'],
-            'senderId' => $add_msg['text'],
+            'senderId' => $user['id'],
             'senderNick' => $user['nick'],
             'text' => $add_msg['text'],
             'time' => $add_msg['time']
