@@ -29,17 +29,12 @@ class Chat implements MessageComponentInterface {
 
     public function onMessage(ConnectionInterface $from, $message_json) {
 
-        $headers_cookies = $from->httpRequest->getHeader('Cookie');
-        if(!count($headers_cookies))
-            return;
-
-        $cookies = \GuzzleHttp\Psr7\parse_header($headers_cookies)[0];
-        if(empty($cookies['session']))
-            return;
-
         $message = json_decode($message_json);
-        $user = $this->user->checkAuth($cookies['session']);
-        if(!$user or !isset($message->message))
+        if(!isset($message->session) or !isset($message->message))
+            return;
+
+        $user = $this->user->checkAuth($message->session);
+        if(!$user)
             return;
 
         $add_msg_id = $this->messages->addMessage($user['id'], $message->message, time());

@@ -28,7 +28,7 @@ class Chat extends React.Component {
 
 
     send(form){
-        this.ws.send(JSON.stringify({message: form.current.value}));
+        this.ws.send(JSON.stringify({message: form.current.value, session: this.props.user.session}));
         //this.props.sendMessage({text: form.current.value});
     }
 

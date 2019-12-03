@@ -21,6 +21,6 @@ class AuthCheck extends \App\Core\Controller
         if(!$user)
             return;
          
-        print json_encode(['nick'=>$user['nick']]);
+        print json_encode(['nick' => $user['nick'], 'newSession' => $user['session']]);
     }
 }

@@ -30,7 +30,7 @@ export const checkUser = () => {
         return Axios.get('/api/auth/check')
             .then(response => {
                 if(response.data.nick)
-                    dispatch(setUser(response.data.nick));
+                    dispatch(setUser(response.data.nick, response.data.newSession));
                 else
                    dispatch(setUser('null'));
             })

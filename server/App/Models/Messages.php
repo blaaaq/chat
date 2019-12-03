@@ -9,7 +9,7 @@ class Messages extends \App\Core\Model
     public static function getMessage($id)
     {
         $db = static::getDB();
-        $stmt = $db->query('SELECT * FROM messages where id = :id');
+        $stmt = $db->prepare('SELECT * FROM messages where id = :id');
         $stmt->execute([':id' => $id]);
         return $stmt->fetch();
     }
