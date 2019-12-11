@@ -57,8 +57,10 @@ export const login = (data) => {
 
 export const register = (data) => {
     return dispatch => {
-        if(data.password !== data.password2)
+        if(data.password !== data.password2) {
             dispatch(showNotification('Пароли не совпадают!'));
+            return;
+        }
 
         return Axios.post('/api/register', JSON.stringify(data))
             .then(response => {
