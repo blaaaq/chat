@@ -69,7 +69,7 @@ export const register = (data) => {
                     dispatch(showNotification('Вы успешо зарегистрировались!'));
                 }
                 else
-                    dispatch(showNotification('Какая-то ошибка. Попробуйте позже...'));
+                    dispatch(showNotification(response.data));
             })
             .catch(err => {
                 dispatch(showNotification('Какая-то ошибка. Попробуйте позже...'));
