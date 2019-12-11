@@ -8,12 +8,12 @@ const Message = (props) => {
     const date = new Date();
     date.setTime(message.time*1000);
 
-    const months=['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'ноября', 'декабря'];
+    const months=['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
 
 
     let showDay = () => {
         if (nowDate.getDate() !== date.getDate())
-            return <span className="pr-2"> {date.getDate()} {months[date.getMonth() - 1]},</span>
+            return <span className="pr-2"> {date.getDate()} {months[date.getMonth()]},</span>
     };
 
     let showYear = () => {
