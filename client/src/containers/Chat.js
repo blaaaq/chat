@@ -1,9 +1,11 @@
 import React from "react";
 import {connect} from 'react-redux';
 import * as messages from '../actions/messages';
+import * as notification from "../actions/notification";
 
 import Message from '../components/Message';
 import SendMessageForm from "../components/SendMessageForm";
+
 
 
 
@@ -28,7 +30,16 @@ class Chat extends React.Component {
 
 
     send(form){
-        this.ws.send(JSON.stringify({message: form.current.value, session: this.props.user.session}));
+        if(form.current.value === ''){
+            this.props.showNotification('Сообщение пустое!');
+            return;
+        }
+
+        let files = [];
+        for(let id in this.props.messages.files)
+            files.push([this.props.messages.files[id].hash, this.props.messages.files[id].type]);
+
+        this.ws.send(JSON.stringify({message: form.current.value, files: files, session: this.props.user.session}));
         //this.props.sendMessage({text: form.current.value});
     }
 
@@ -58,7 +69,7 @@ class Chat extends React.Component {
 
         return (
             <div id="qqq" className="chat" onScroll={this.scroll} ref={this.chatBlock}>
-                { this.props.isAuth() ? <SendMessageForm send={this.send} /> : <div className="text-center">Войдите, чтобы писать сообщения...</div> }
+                { this.props.isAuth() ? <SendMessageForm send={this.send} showFormUploadFile={this.props.messages.showFormUploadFile} changeShowFormUploadFile={this.props.changeShowFormUploadFile} loadFile={this.props.loadFile} deleteFile={this.props.deleteFile} files={this.props.messages.files} /> : <div className="text-center">Войдите, чтобы писать сообщения...</div> }
                 { messages }
                 {this.add()}
             </div>
@@ -75,8 +86,12 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
     setMessage: messages.setMessage,
+    changeShowFormUploadFile: messages.changeShowFormUploadFile,
     getLastMessages: messages.getLastMessages,
     getMessagesFromId: messages.getMessagesFromId,
+    loadFile: messages.loadFile,
+    deleteFile: messages.deleteFile,
+    showNotification: notification.showNotification
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);

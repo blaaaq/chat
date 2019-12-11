@@ -26,8 +26,10 @@ $router->add('api/logout', ['controller' => 'Logout', 'action' => 'logout']);
 
 $router->add('api/messages/last', ['controller' => 'LastMessages', 'action' => 'view']);
 $router->add('api/messages/from/{id:\d+}', ['controller' => 'MessagesFromId', 'action' => 'view']);
-$router->add('api/message/send', ['controller' => 'SendMessage', 'action' => 'view']);
+//$router->add('api/message/send', ['controller' => 'SendMessage', 'action' => 'view']);
+$router->add('api/message/loadfile', ['controller' => 'LoadFile', 'action' => 'load']);
 
 $router->add('api/ws/send', ['controller' => 'WS', 'action' => 'view']);
+
 
 $router->dispatch($_SERVER['QUERY_STRING']);

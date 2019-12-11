@@ -1,6 +1,3 @@
-import Axios from "axios";
-import {error, setUser} from "./user";
-
 export const CHANGE_NOTIFICATION = 'CHANGE_NOTIFICATION';
 
 

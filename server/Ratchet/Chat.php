@@ -41,12 +41,19 @@ class Chat implements MessageComponentInterface {
         if(!$add_msg_id)
             return;
 
+        $files = [];
+        foreach($message->files as $file)
+            $files[]=['id_message' => $add_msg_id, 'hash' => $file[0], 'type' => $file[1]];
+
+        $this->messages->addMessageFiles($files);
+
         $add_msg = $this->messages->getMessage($add_msg_id);
         $send_data=[
             'id' => $add_msg['id'],
             'senderId' => $user['id'],
             'senderNick' => $user['nick'],
             'text' => $add_msg['text'],
+            'files' => $message->files,
             'time' => $add_msg['time']
         ];
 

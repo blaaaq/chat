@@ -50,3 +50,11 @@
     color: #161;
 }
 
+.cursor-pointer{
+    cursor: pointer;
+}
+
+.user-image{
+    max-width: 30%;
+    padding: 3px;
+}

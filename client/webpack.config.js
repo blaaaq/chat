@@ -33,6 +33,9 @@ module.exports = {
             '/api': {
                 target: 'http://localhost:80'
             },
+            '/user_images': {
+                target: 'http://localhost:80'
+            }
         }
     }
 };
