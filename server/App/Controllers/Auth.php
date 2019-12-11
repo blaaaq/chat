@@ -20,7 +20,7 @@ class Auth extends \App\Core\Controller
 
         $user = $this->user->getUser($this->post->nick);
 
-        if($user AND $user['password'] == $this->post->password){
+        if($user AND password_verify($this->post->password, $user['password'])){
 
             $new_session=$this->generateSession(64);
 

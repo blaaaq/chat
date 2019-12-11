@@ -24,9 +24,10 @@ class Register extends \App\Core\Controller
             return;
 
 
+        $password = password_hash($this->post->password, PASSWORD_DEFAULT);
         $new_session = $this->generateSession(64);
 
-        $register = $this->user->Register($this->post->nick, $this->post->password,$new_session);
+        $register = $this->user->Register($this->post->nick, $password ,$new_session);
         if (!$register)
             return;
 
