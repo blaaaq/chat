@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Дек 11 2019 г., 18:20
+-- Время создания: Дек 15 2019 г., 19:14
 -- Версия сервера: 10.4.7-MariaDB
 -- Версия PHP: 7.2.20
 
@@ -76,6 +76,7 @@ CREATE TABLE `users` (
   `password` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `session` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `messages_count` int(11) NOT NULL DEFAULT 0,
+  `time_block` int(11) NOT NULL DEFAULT 0,
   `time_register` int(11) NOT NULL DEFAULT 0,
   `time_online` int(11) NOT NULL DEFAULT 0
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
