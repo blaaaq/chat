@@ -1,5 +1,7 @@
 <?php
 
+use App\Config\Config;
+
 define('ROOT', __DIR__ . '/../');
 
 
@@ -10,9 +12,9 @@ set_error_handler('App\Core\Error::errorHandler');
 set_exception_handler('App\Core\Error::exceptionHandler');
 
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, Access-Control-Allow-Origin, Access-Control-Allow-Methods, Access-Control-Request-Headers');
+header('Access-Control-Allow-Origin: '. Config::CLIENT_FULL_URL());
+header('Access-Control-Allow-Headers: X-Requested-With');
+header('Access-Control-Allow-Credentials: true');
 
 
 $router = new App\Core\Router();

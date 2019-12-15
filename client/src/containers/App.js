@@ -1,6 +1,7 @@
 import React from "react";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {connect} from 'react-redux';
+import axios from 'axios';
 
 import Header from '../components/Header';
 import MainBlock from './MainBlock';
@@ -8,7 +9,9 @@ import RightBlock from './RightBlock';
 import Notification from '../components/Notification';
 import * as user from "../actions/user";
 
-
+//axios.defaults.baseURL = '';
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+axios.defaults.withCredentials = true;
 
 function App(props) {
     const {user, logout} = props;
