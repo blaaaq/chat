@@ -72,4 +72,33 @@ class Messages extends \App\Core\Model
         return $db->lastInsertId();
     }
 
+
+
+    public static function getTimeLastMessage($id_user, $count_from_end)
+    {
+        $db = static::getDB();
+        $stmt = $db->prepare('SELECT time FROM messages where id_sender = :id_user order by id desc limit :limit, 1');
+        $stmt->bindValue(':id_user', $id_user);
+        $stmt->bindValue(':limit', $count_from_end, $db::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    public static function getLastUserMessages($id_user, $count)
+    {
+        $db = static::getDB();
+        $stmt = $db->prepare('SELECT * FROM messages where id_sender = :id_user order by id desc limit :limit');
+        $stmt->bindValue(':id_user', $id_user);
+        $stmt->bindValue(':limit', $count, $db::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public static function blockUser($id_user, $time)
+    {
+        $db = static::getDB();
+        $stmt = $db->prepare('update users set time_block = :time where id = :id_user');
+        $stmt->execute([':id_user' => $id_user, ':time' => time() + $time]);
+        return $stmt;
+    }
 }

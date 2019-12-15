@@ -25,9 +25,18 @@ class Chat extends React.Component {
     componentDidMount() {
         this.props.getLastMessages();
         this.ws = new WebSocket('ws://localhost:8081/echo');
-        this.ws.onmessage = (e) => this.props.setMessage({message: JSON.parse(e.data)});
+        this.ws.onmessage = (message) => this.onMessage(message);
     }
 
+    onMessage(message) {
+        let data = JSON.parse(message.data);
+        if (data.error) {
+            this.props.showNotification(data.error);
+            return;
+        }
+
+        this.props.setMessage({message: data});
+    }
 
     send(form){
         if(form.current.value === ''){
