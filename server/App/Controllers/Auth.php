@@ -4,33 +4,43 @@
 namespace App\Controllers;
 
 use App\Models;
+use App\Traits\User;
 
 class Auth extends \App\Core\Controller
 {
+    use User;
 
-    public $user;
+    private $user;
 
+    public function __construct($params)
+    {
+        parent::__construct($params);
 
-    public function auth(){
-        if(empty($this->post->nick))
-            return;
-
-
-        $this->user=new Models\User();
-
-        $user = $this->user->getUser($this->post->nick);
-
-        if($user AND password_verify($this->post->password, $user['password'])){
-
-            $new_session=$this->generateSession(64);
-
-            setcookie('session', $new_session, time() + 60*60*24*30, '/');
-            $this->user->authSuccess($user['id'],$new_session);
-
-            print json_encode(['nick'=>$user['nick'],'newSession'=>$new_session]);
-        }
-
-
-
+        $this->user = new Models\User();
     }
+
+
+    private function validateParams($nick, $password)
+    {
+        $error = $this->validateNickPassword($this->post->nick, $this->post->password);
+        if (!empty($error))
+            die($error);
+    }
+
+
+    public function auth()
+    {
+        $this->validateParams($this->post->nick, $this->post->password);
+
+        $user = $this->user::getUser($this->post->nick);
+        if (!$user or !password_verify($this->post->password, $user['password']))
+            die('Логин или пароль неверные!');
+
+        $newSession = $this->generateSession(64);
+        setcookie('session', $newSession, time() + 60*60*24*30, '/');
+        $this->user->authSuccess($user['id'], $newSession);
+
+        print json_encode(['nick'=>$user['nick'],'newSession'=>$newSession]);
+    }
+
 }

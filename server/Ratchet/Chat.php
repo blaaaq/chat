@@ -2,25 +2,27 @@
 
 namespace Ratchet;
 
-use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 
 use App\Models\Messages;
 use App\Models\User;
 
 class Chat implements MessageComponentInterface {
     protected $clients;
-    protected $user;
-    protected $messages;
+    private $user;
+    private $messages;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->clients = new \SplObjectStorage;
 
         $this->messages = new Messages();
         $this->user = new User();
     }
 
-    public function sendError($from, $error) {
+    private function sendError($from, $error)
+    {
         foreach ($this->clients as $client) {
             if ($from == $client) {
                 $client->send(json_encode(['error' => $error]));
@@ -29,52 +31,62 @@ class Chat implements MessageComponentInterface {
         }
     }
 
-    public function checkPossibilityMessage($user, $new_message) {
-        $timeLastN=$this->messages->getTimeLastMessage($user['id'], 4);
-        $numLastMessagesSimilarCheck = 5;
-        $messagesSimilarCheck=$this->messages->getLastUserMessages($user['id'], $numLastMessagesSimilarCheck - 1);
 
-        $time_left = $user['time_block'] - time();
-        if ($time_left > 0)
-            return 'Вам осталось '.$time_left.' сек.';
-
-        if (!empty($timeLastN['time']))
+    private function checkFastSend($user_id, $timeLastN)
+    {
+        if (!empty($timeLastN['time'])){
             if (time() < $timeLastN['time'] + 10) {
-                $this->messages->blockUser($user['id'], 60);
+                $this->messages->blockUser($user_id, 60);
                 return 'Слишком быстро. Вы заблокированы на 1 минуту. Подождите...';
             }
+        }
+    }
 
-        $num=0;
-        foreach ($messagesSimilarCheck as $message) {
+    private function checkSimilarSend($user_id, $messages, $new_message, $numLastCheckMessages)
+    {
+        $num = 0;
+        foreach ($messages as $message) {
             if (mb_strlen($message['text']) > 10) {
                 similar_text($message['text'], $new_message, $perc);
                 if ($perc > 90)
                     $num++;
             }
         }
-        if ($num == $numLastMessagesSimilarCheck) {
-            $this->messages->blockUser($user['id'], 180);
+        if ($num == $numLastCheckMessages) {
+            $this->messages->blockUser($user_id, 180);
             return 'Повторяющиеся сообщения. Вы заблокированы на 3 минуты. Подождите...';
         }
     }
 
 
+    private function checkPossibilityMessage($user, $new_message)
+    {
+        $timeLastN=$this->messages->getTimeLastMessage($user['id'], 4);
+        $numLastMessagesSimilarCheck = 4;
+        $messagesSimilarCheck=$this->messages->getLastUserMessages($user['id'], $numLastMessagesSimilarCheck);
 
-    public function onOpen(ConnectionInterface $conn) {
-        $this->clients->attach($conn);
+        $time_left = $user['time_block'] - time();
+        if ($time_left > 0)
+            return 'Вам осталось '.$time_left.' сек.';
 
-        echo "New connection! ({$conn->resourceId})\n";
+        $fastSendError = $this->checkFastSend($user['id'], $timeLastN);
+        if (!empty($fastSendError))
+            return $fastSendError;
+
+        $similarError = $this->checkSimilarSend($user['id'], $messagesSimilarCheck, $new_message, $numLastMessagesSimilarCheck);
+        if (!empty($similarError))
+            return $similarError;
     }
 
 
-    public function onMessage(ConnectionInterface $from, $message_json) {
-
+    public function onMessage(ConnectionInterface $from, $message_json)
+    {
         $message = json_decode($message_json);
-        if(!isset($message->session) or !isset($message->message))
+        if (!isset($message->session) or !isset($message->message))
             return;
 
         $user = $this->user->checkAuth($message->session);
-        if(!$user)
+        if (!$user)
             return;
 
         $error = $this->checkPossibilityMessage($user, $message->message);
@@ -84,17 +96,17 @@ class Chat implements MessageComponentInterface {
         }
 
         $add_msg_id = $this->messages->addMessage($user['id'], $message->message, time());
-        if(!$add_msg_id)
+        if (!$add_msg_id)
             return;
 
         $files = [];
-        foreach($message->files as $file)
-            $files[]=['id_message' => $add_msg_id, 'hash' => $file[0], 'type' => $file[1]];
+        foreach ($message->files as $file)
+            $files[] = ['id_message' => $add_msg_id, 'hash' => $file[0], 'type' => $file[1]];
 
         $this->messages->addMessageFiles($files);
-
         $add_msg = $this->messages->getMessage($add_msg_id);
-        $send_data=[
+
+        $send_data = [
             'id' => $add_msg['id'],
             'senderId' => $user['id'],
             'senderNick' => $user['nick'],
@@ -104,17 +116,26 @@ class Chat implements MessageComponentInterface {
         ];
 
         foreach ($this->clients as $client) {
-                $client->send(json_encode($send_data));
+            $client->send(json_encode($send_data));
         }
     }
 
 
-    public function onClose(ConnectionInterface $conn) {
+    public function onOpen(ConnectionInterface $conn)
+    {
+        $this->clients->attach($conn);
+
+        echo "New connection! ({$conn->resourceId})\n";
+    }
+
+    public function onClose(ConnectionInterface $conn)
+    {
         $this->clients->detach($conn);
         echo "Connection {$conn->resourceId} has disconnected\n";
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
         echo "An error has occurred: {$e->getMessage()}\n";
         $conn->close();
     }

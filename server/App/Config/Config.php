@@ -14,7 +14,9 @@ class Config
 
         SHOW_ERRORS = true;
 
-        public static function CLIENT_FULL_URL(){
+
+        public static function CLIENT_FULL_URL()
+        {
             return (!empty($_SERVER['HTTPS']) ? 'https://' : 'http://').self::CLIENT_URL;
         }
 }

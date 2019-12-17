@@ -6,13 +6,6 @@ namespace App\Models;
 
 class User extends \App\Core\Model
 {
-    public static function getAll()
-    {
-        $db = static::getDB();
-        $stmt = $db->query('SELECT * FROM users');
-        return $stmt->fetchAll();
-    }
-
     public static function checkAuth($session)
     {
         $db = static::getDB();
@@ -45,13 +38,14 @@ class User extends \App\Core\Model
         return $stmt->fetch();
     }
 
-    public static function authSuccess($id,$new_session)
+    public static function authSuccess($id, $new_session)
     {
         $db = static::getDB();
         $stmt = $db->prepare('update users set session = :session where id = :id');
         $stmt->execute([':session' => $new_session, ':id' => $id]);
         return $stmt;
     }
+
     public static function logout($session)
     {
         $db = static::getDB();
@@ -59,6 +53,5 @@ class User extends \App\Core\Model
         $stmt->execute([':session' => $session]);
         return $stmt;
     }
-
 
 }

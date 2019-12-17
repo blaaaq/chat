@@ -47,7 +47,7 @@ export const login = (data) => {
                     dispatch(showNotification('Вы успешо вошли!'));
                 }
                 else
-                    dispatch(showNotification('Неверный логин или пароль!'));
+                    dispatch(showNotification(response.data));
             })
             .catch(err => {
                 dispatch(showNotification('Какая-то ошибка. Попробуйте позже...'));

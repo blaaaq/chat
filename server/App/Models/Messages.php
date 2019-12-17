@@ -23,7 +23,7 @@ class Messages extends \App\Core\Model
         return $stmt->fetchAll();
     }
 
-    public static function getMessagesFromId($id,$count)
+    public static function getMessagesFromId($id, $count)
     {
         $db = static::getDB();
         $stmt = $db->prepare('SELECT * FROM messages where id < :id order by id desc limit :limit');
@@ -33,7 +33,7 @@ class Messages extends \App\Core\Model
         return $stmt->fetchAll();
     }
 
-    public static function addMessage($id,$text,$time)
+    public static function addMessage($id, $text, $time)
     {
         $db = static::getDB();
         $stmt = $db->prepare('insert into messages (id_sender, text, time) values (:id_sender, :text, :time)');
@@ -64,7 +64,7 @@ class Messages extends \App\Core\Model
     }
 
 
-    public static function uploadFile($id_user,$name,$hash,$type,$time)
+    public static function uploadFile($id_user, $name, $hash, $type, $time)
     {
         $db = static::getDB();
         $stmt = $db->prepare('insert into files (id_user, name, hash, type, time) values (:id_user, :name, :hash, :type, :time)');

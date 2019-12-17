@@ -7,12 +7,19 @@ use App\Models;
 
 class LoadFile extends \App\Core\Controller
 {
-    public $messages;
-    public $user;
+    private $messages;
+    private $user;
+
+    public function __construct($params)
+    {
+        parent::__construct($params);
+
+        $this->messages = new Models\Messages();
+        $this->user = new Models\User();
+    }
 
 
-
-    public function getExtension($path){
+    private function getExtension($path){
         $ext = '';
         $mime_type=mime_content_type($path);
         if($mime_type === 'image/gif') $ext = '.gif';
@@ -24,12 +31,9 @@ class LoadFile extends \App\Core\Controller
 
     public function load()
     {
-
         if (empty($this->cookies->session))
             return;
 
-        $this->user=new Models\User();
-        $this->messages = new Models\Messages();
 
         $user = $this->user->checkAuth($this->cookies->session);
         if (!$user)
@@ -63,4 +67,5 @@ class LoadFile extends \App\Core\Controller
 
         print json_encode(['result' => 'ok', 'id' => $id, 'hash' => $hash, 'type' => $extension, 'name' => $filename]);
     }
+
 }

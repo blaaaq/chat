@@ -13,6 +13,6 @@ export const changeNotification = (text) => {
 export const showNotification = (message) => {
     return dispatch => {
         dispatch(changeNotification(message));
-        setTimeout(() => dispatch(changeNotification('')),2000);
+        setTimeout(() => dispatch(changeNotification('')), 2000);
     };
 };

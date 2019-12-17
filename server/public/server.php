@@ -20,7 +20,6 @@ header('Access-Control-Allow-Credentials: true');
 $router = new App\Core\Router();
 
 
-$router->add('posts/{id:\d+}/index', ['controller' => 'User', 'action' => 'index2']);
 $router->add('api/auth', ['controller' => 'Auth', 'action' => 'auth']);
 $router->add('api/register', ['controller' => 'Register', 'action' => 'register']);
 $router->add('api/auth/check', ['controller' => 'AuthCheck', 'action' => 'check']);

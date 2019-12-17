@@ -4,46 +4,53 @@
 namespace App\Controllers;
 
 use App\Models;
+use App\Traits\User;
 
 class Register extends \App\Core\Controller
 {
+    use User;
 
-    public $user;
+    private $user;
+
+    public function __construct($params)
+    {
+        parent::__construct($params);
+
+        $this->user = new Models\User();
+    }
+
+
+    private function validateParams($nick, $password)
+    {
+        $error = $this->validateNickPassword($this->post->nick, $this->post->password);
+        if (!empty($error))
+            die($error);
+    }
+
+    private function checkNick($nick)
+    {
+        $user = $this->user->getUser($nick);
+        if ($user)
+            die('Такой ник уже занят!');
+    }
 
 
     public function register()
     {
-        if (empty($this->post->nick))
-            return;
+        $this->validateParams($this->post->nick, $this->post->password);
+        $this->checkNick($this->post->nick);
 
-        if (!preg_match('|^[а-яa-z0-9_]{2,30}$|iu',$this->post->nick))
-            die('Ник может состоять из букв русского, английского алфавитов, цифр, знака _ и длины от 2 до 30 символов!');
+        $password = $this->generateHash($this->post->password);
+        $newSession = $this->generateSession(64);
 
-        $len_password = mb_strlen($this->post->password);
-        if ($len_password < 3 or $len_password > 60)
-            die('Пароль должен быть не короче 3-ех и не больше 60 символов!');
-
-
-        $this->user = new Models\User();
-
-        $user = $this->user->getUser($this->post->nick);
-        if ($user)
-            die('Такой ник уже занят!');
-
-
-        $password = password_hash($this->post->password, PASSWORD_DEFAULT);
-        $new_session = $this->generateSession(64);
-
-        $register = $this->user->Register($this->post->nick, $password ,$new_session);
+        $register = $this->user->Register($this->post->nick, $password ,$newSession);
         if (!$register)
             return;
 
 
-        setcookie('session', $new_session, time() + 60 * 60 * 24 * 30, '/');
+        setcookie('session', $newSession, time() + 60 * 60 * 24 * 30, '/');
 
-
-        print json_encode(['nick' => $this->post->nick, 'newSession' => $new_session]);
+        print json_encode(['nick' => $this->post->nick, 'newSession' => $newSession]);
     }
-
 
 }
