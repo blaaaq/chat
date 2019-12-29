@@ -33,8 +33,11 @@ class Auth extends \App\Core\Controller
         $this->validateParams($this->post->nick, $this->post->password);
 
         $user = $this->user::getUser($this->post->nick);
-        if (!$user or !password_verify($this->post->password, $user['password']))
-            die('Логин или пароль неверные!');
+        if (!$user)
+            die('Такого пользователя не существует!');
+
+        if ($this->generateHash($this->post->password) != $user['password'])
+            die('Пароль неверный!');
 
         $newSession = $this->generateSession(64);
         setcookie('session', $newSession, time() + 60*60*24*30, '/');

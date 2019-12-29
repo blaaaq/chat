@@ -33,7 +33,7 @@ trait User
 
 
     public function generateHash($password){
-        return password_hash($password, PASSWORD_DEFAULT);
+        return hash('gost',$password);
     }
 
     public function generateSession($len){
